@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Strategy Doctor — Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
+                    <rect width="48" height="48" rx="12" fill="#0d6efd"/>
+                    <path d="M14 28l8-10 8 6 8-12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <span class="fw-bold">Trading Strategy Doctor</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-light" id="themeToggle" title="Toggle dark/light mode">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <button class="btn btn-sm btn-outline-light" id="exportBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export Report
+                </button>
+                <a href="/" class="btn btn-sm btn-outline-light">New Upload</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 py-3">
+        <!-- Filter Bar -->
+        <div class="card mb-4 filter-card">
+            <div class="card-body py-3">
+                <div class="row g-2 align-items-end" id="filterBar">
+                    <div class="col-auto filter-group" data-filter="Symbol">
+                        <label class="form-label small text-secondary mb-1">Symbol</label>
+                        <select class="form-select form-select-sm" multiple></select>
+                    </div>
+                    <div class="col-auto filter-group" data-filter="StrategyName">
+                        <label class="form-label small text-secondary mb-1">Strategy</label>
+                        <select class="form-select form-select-sm" multiple></select>
+                    </div>
+                    <div class="col-auto filter-group" data-filter="Session">
+                        <label class="form-label small text-secondary mb-1">Session</label>
+                        <select class="form-select form-select-sm" multiple></select>
+                    </div>
+                    <div class="col-auto filter-group" data-filter="TimeFrame">
+                        <label class="form-label small text-secondary mb-1">TimeFrame</label>
+                        <select class="form-select form-select-sm" multiple></select>
+                    </div>
+                    <div class="col-auto filter-group" data-filter="StateMachine">
+                        <label class="form-label small text-secondary mb-1">State Machine</label>
+                        <select class="form-select form-select-sm" multiple></select>
+                    </div>
+                    <div class="col-auto filter-group" data-filter="ExitReason">
+                        <label class="form-label small text-secondary mb-1">Exit Reason</label>
+                        <select class="form-select form-select-sm" multiple></select>
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label small text-secondary mb-1">Date From</label>
+                        <input type="date" class="form-control form-control-sm" id="dateFrom">
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label small text-secondary mb-1">Date To</label>
+                        <input type="date" class="form-control form-control-sm" id="dateTo">
+                    </div>
+                    <div class="col-auto d-flex gap-1">
+                        <button class="btn btn-primary btn-sm" id="applyFiltersBtn">Apply</button>
+                        <button class="btn btn-outline-secondary btn-sm" id="resetFiltersBtn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="row g-3 mb-4" id="metricsRow">
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="netProfit">
+                    <div class="card-body">
+                        <div class="metric-label">Net Profit <i class="info-icon" title="Total Net PnL across all trades"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="totalTrades">
+                    <div class="card-body">
+                        <div class="metric-label">Total Trades</div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="winRate">
+                    <div class="card-body">
+                        <div class="metric-label">Win Rate <i class="info-icon" title="Percentage of profitable trades — Good: >55%, Excellent: >65%"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="profitFactor">
+                    <div class="card-body">
+                        <div class="metric-label">Profit Factor <i class="info-icon" title="Total Gross Profit / Total Gross Loss — Good: >1.5, Excellent: >2"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="avgWinner">
+                    <div class="card-body">
+                        <div class="metric-label">Avg Winner</div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="avgLoser">
+                    <div class="card-body">
+                        <div class="metric-label">Avg Loser</div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="avgRR">
+                    <div class="card-body">
+                        <div class="metric-label">Avg R:R <i class="info-icon" title="Average Winner / Average Loser — Good: >1.5"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="maxDrawdown">
+                    <div class="card-body">
+                        <div class="metric-label">Max Drawdown <i class="info-icon" title="Largest peak-to-trough decline — Critical: >20%"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="avgTradeDuration">
+                    <div class="card-body">
+                        <div class="metric-label">Avg Trade Duration <i class="info-icon" title="Average holding period per trade in minutes"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="avgMfe">
+                    <div class="card-body">
+                        <div class="metric-label">Avg MFE <i class="info-icon" title="Maximum Favorable Excursion — average best price reached"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="avgMae">
+                    <div class="card-body">
+                        <div class="metric-label">Avg MAE <i class="info-icon" title="Maximum Adverse Excursion — average worst price reached"></i></div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="largestWinner">
+                    <div class="card-body">
+                        <div class="metric-label">Largest Winner</div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2 metric-col">
+                <div class="card metric-card" data-metric="largestLoser">
+                    <div class="card-body">
+                        <div class="metric-label">Largest Loser</div>
+                        <div class="metric-value">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-8">
+                <div class="card chart-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-secondary">Equity Curve</h6>
+                        <canvas id="equityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="card chart-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-secondary">Win vs Loss</h6>
+                        <canvas id="winLossChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card chart-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-secondary">PnL Distribution</h6>
+                        <canvas id="pnlDistChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card chart-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-secondary">Monthly Profit</h6>
+                        <canvas id="monthlyPnlChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card chart-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-secondary">Drawdown Curve</h6>
+                        <canvas id="drawdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card chart-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-secondary">Trade Duration Histogram</h6>
+                        <canvas id="durationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Score & Diagnosis Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <h5 class="card-title mb-3">Strategy Health Score</h5>
+                        <div class="health-score-value" id="healthScore">—</div>
+                        <div class="health-score-label" id="healthLabel">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Strategy Diagnosis</h5>
+                        <div class="row g-2" id="diagnosisContainer">
+                            <div class="col-md-6">
+                                <h6 class="text-success mb-2">Strengths</h6>
+                                <ul class="list-unstyled small" id="strengthsList"><li class="text-secondary">—</li></ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-warning mb-2">Weaknesses</h6>
+                                <ul class="list-unstyled small" id="weaknessesList"><li class="text-secondary">—</li></ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-danger mb-2">Risks</h6>
+                                <ul class="list-unstyled small" id="risksList"><li class="text-secondary">—</li></ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-info mb-2">Recommendations</h6>
+                                <ul class="list-unstyled small" id="recommendationsList"><li class="text-secondary">—</li></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade Table -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Trade Log</h5>
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control form-control-sm" id="tableSearch" placeholder="Search trades…" style="width:200px">
+                        <select class="form-select form-select-sm" id="perPageSelect" style="width:auto">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover trade-table" id="tradeTable">
+                        <thead>
+                            <tr id="tableHeader"></tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <nav>
+                    <ul class="pagination pagination-sm justify-content-center" id="tablePagination"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/charts.js"></script>
+</body>
+</html>
