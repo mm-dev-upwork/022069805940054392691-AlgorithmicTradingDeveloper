@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=flat&logo=bootstrap&logoColor=white" alt="Bootstrap">
   <img src="https://img.shields.io/badge/Chart.js-4.4-FF6384?style=flat&logo=chartdotjs&logoColor=white" alt="Chart.js">
   <br>
-  <img src="https://img.shields.io/badge/License-MIT-green?style=flat" alt="License">
+  <img src="https://img.shields.io/badge/License-Proprietary-red?style=flat" alt="License">
   <img src="https://img.shields.io/badge/Status-Production_Ready-success?style=flat" alt="Status">
 </div>
 
@@ -83,6 +83,19 @@ uvicorn app:app --reload
 ```
 
 Open **http://localhost:8000** in your browser.
+
+### Dashboard with Sample Data
+
+No CSV to test with? The app **automatically loads sample data** at startup. Just start the server and open the dashboard:
+
+```bash
+uvicorn app:app --reload
+# Open http://localhost:8000/dashboard
+```
+
+The sample dashboard will display all metrics, charts, health score, and diagnosis immediately — no upload needed. Use the filter bar to explore by Symbol, Strategy, Session, or TimeFrame.
+
+> **💡 On the live demo:** Visit the [Live Demo](https://zero22069805940054392691.onrender.com/), then click **"Or load sample data"** on the upload page to explore the dashboard immediately with built-in sample trades.
 
 ---
 
@@ -230,7 +243,7 @@ This app is deployed on **Render.com**:
 
 ## 📝 License
 
-MIT — use freely for personal or commercial projects.
+Proprietary — All rights reserved. See [LICENSE](LICENSE) for terms and conditions.
 
 ---
 
